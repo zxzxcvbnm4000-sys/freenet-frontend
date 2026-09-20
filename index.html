@@ -6,7 +6,6 @@
     <title>FreeNet STORE</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0f172a">
-    <!-- Tailwind CSS for Dark Mode styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -65,6 +64,17 @@
                     دخول
                 </button>
             </form>
+
+            <!-- ➕ أزرار إنشاء حساب ونسيت كلمة المرور -->
+            <div class="flex justify-between items-center text-xs text-slate-400 mt-5 pt-4 border-t border-slate-700/60">
+                <button type="button" onclick="openModal('registerModal')" class="hover:text-emerald-400 transition font-medium">
+                    <i class="fa-solid fa-user-plus ml-1"></i> إنشاء حساب جديد
+                </button>
+                <button type="button" onclick="openModal('forgotModal')" class="hover:text-amber-400 transition font-medium">
+                    <i class="fa-solid fa-key ml-1"></i> نسيت كلمة المرور؟
+                </button>
+            </div>
+
             <p id="loginError" class="text-red-400 text-sm text-center mt-4 hidden"></p>
         </section>
 
@@ -115,6 +125,56 @@
 
     </main>
 
+    <!-- 🪟 نافذة إنشاء حساب جديد (Modal) -->
+    <div id="registerModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 w-full max-w-sm relative shadow-2xl">
+            <button onclick="closeModal('registerModal')" class="absolute top-4 left-4 text-slate-400 hover:text-white text-lg">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <h3 class="text-xl font-bold text-emerald-400 text-center mb-4">حساب جديد</h3>
+            <form onsubmit="handleRegister(event)" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1">الاسم الكامل</label>
+                    <input type="text" id="regName" required placeholder="محمد أشرَف" 
+                        class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1">رقم الهاتف</label>
+                    <input type="tel" id="regPhone" required placeholder="01xxxxxxxxx" 
+                        class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1">كلمة السر</label>
+                    <input type="password" id="regPassword" required placeholder="••••••••" 
+                        class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500">
+                </div>
+                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-xl mt-2 text-sm">
+                    إنشاء الحساب
+                </button>
+            </form>
+            <p id="regMsg" class="text-xs text-center mt-3 hidden"></p>
+        </div>
+    </div>
+
+    <!-- 🪟 نافذة نسيت كلمة المرور (Modal) -->
+    <div id="forgotModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 w-full max-w-sm relative shadow-2xl text-center">
+            <button onclick="closeModal('forgotModal')" class="absolute top-4 left-4 text-slate-400 hover:text-white text-lg">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="w-12 h-12 bg-amber-500/20 text-amber-400 rounded-full flex items-center justify-center mx-auto mb-3 text-xl">
+                <i class="fa-solid fa-headset"></i>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-2">استعادة كلمة المرور</h3>
+            <p class="text-xs text-slate-300 leading-relaxed mb-4">
+                لإعادة تعيين كلمة السر الخاصة بحسابك، يرجى التواصل مباشر مع خدمة الدعم الفني أو الأدمن المسؤول.
+            </p>
+            <a href="https://wa.me/201000000000" target="_blank" class="block w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-xl text-sm">
+                <i class="fa-brands fa-whatsapp ml-1"></i> تواصل مع الأدمن
+            </a>
+        </div>
+    </div>
+
     <!-- Footer -->
     <footer class="bg-slate-800 border-t border-slate-700 py-3 text-center text-xs text-slate-400">
         FreeNet STORE &copy; 2026 - جميع الحقوق محفوظة
@@ -124,7 +184,6 @@
     <script>
         const API_URL = 'https://freenet-backend1.vercel.app';
 
-        // PWA Service Worker Registration
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js').catch(err => console.log('SW Fail:', err));
         }
@@ -136,6 +195,9 @@
                 showDashboard();
             }
         });
+
+        function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
 
         async function handleLogin(e) {
             e.preventDefault();
@@ -163,6 +225,38 @@
             } catch (err) {
                 errEl.innerText = 'تعذر الاتصال بالسيرفر، تحقق من الإنترنت';
                 errEl.classList.remove('hidden');
+            }
+        }
+
+        async function handleRegister(e) {
+            e.preventDefault();
+            const name = document.getElementById('regName').value;
+            const phone = document.getElementById('regPhone').value;
+            const password = document.getElementById('regPassword').value;
+            const msgEl = document.getElementById('regMsg');
+
+            try {
+                const res = await fetch(`${API_URL}/api/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, phone, password })
+                });
+                const data = await res.json();
+                
+                if (res.ok && data.success) {
+                    msgEl.className = 'text-xs text-center mt-3 text-emerald-400 font-semibold';
+                    msgEl.innerText = 'تم إنشاء الحساب بنجاح! يمكنك الآن الدخول.';
+                    msgEl.classList.remove('hidden');
+                    setTimeout(() => closeModal('registerModal'), 2000);
+                } else {
+                    msgEl.className = 'text-xs text-center mt-3 text-red-400 font-semibold';
+                    msgEl.innerText = data.message || 'تعذر إنشاء الحساب';
+                    msgEl.classList.remove('hidden');
+                }
+            } catch (err) {
+                msgEl.className = 'text-xs text-center mt-3 text-red-400 font-semibold';
+                msgEl.innerText = 'تم طلب التسجيل، تواصل مع الأدمن لتفعيل الحساب.';
+                msgEl.classList.remove('hidden');
             }
         }
 
@@ -260,4 +354,3 @@
     </script>
 </body>
 </html>
-
