@@ -39,7 +39,12 @@ async function handleLogin(e) {
         if (data.success) {
             currentUser = data.user;
             localStorage.setItem('freenet_user', JSON.stringify(currentUser));
-            showDashboard();
+                    if (currentUser.role === 'admin' || currentUser.phone === '01001621853') {
+            showDashboard(); // لوحة التحكم الخاصة بك كأدمن
+        } else {
+            showClientDashboard(currentUser); // واجهة العميل (الترحيب باسمه + الباقة + الـ 3 أزرار)
+                    }
+            
         } else {
             errEl.innerText = data.message || 'خطأ في رقم الهاتف أو كلمة المرور';
             errEl.classList.remove('hidden');
@@ -245,4 +250,42 @@ async function loadPackages() {
     } catch (err) {
         list.innerHTML = `<p class="text-red-400 text-xs text-center py-4">تعذر تحميل الباقات</p>`;
     }
+}
+// دالة عرض واجهة العميل (ترحيب + تفاصيل الباقة + الـ 3 أزرار)
+function showClientDashboard(user) {
+    // إخفاء كروت تسجيل الدخول والإنشاء
+    const loginCard = document.getElementById('login-card');
+    const registerCard = document.getElementById('register-card');
+    if (loginCard) loginCard.style.display = 'none';
+    if (registerCard) registerCard.style.display = 'none';
+
+    // البحث عن مكان عرض الواجهة أو إنشاؤها
+    let container = document.getElementById('client-dashboard-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'client-dashboard-container';
+        document.body.appendChild(container);
+    }
+
+    // محتوى واجهة العميل بالتصميم المتفق عليه
+    container.innerHTML = `
+        <div style="padding: 20px; color: #fff; max-width: 400px; margin: 40px auto; background: #1a1a1a; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); font-family: Tahoma, sans-serif;">
+            <!-- ترحيب باسم العميل -->
+            <h2 style="color: #2ecc71; text-align: center; margin-bottom: 5px;">أهلاً بك، ${user.name || 'عزيزنا العميل'} 👋</h2>
+            <p style="text-align: center; color: #aaa; font-size: 13px; margin-bottom: 20px;">رقم الموبايل: ${user.phone || ''}</p>
+
+            <!-- صندوق عرض الباقة -->
+            <div style="background: #2a2a2a; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #444;">
+                <h3 style="color: #f39c12; margin-bottom: 8px; font-size: 16px;">📦 باقتك الحالية</h3>
+                <p id="client-package-details" style="color: #fff; font-size: 14px; margin: 0;">${user.package || 'باقة الإنترنت الأساسية (نشطة)'}</p>
+            </div>
+
+            <!-- الـ 3 أزرار الخاصة بالعميل -->
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <button onclick="alert('تفاصيل الباقة: متبقي 28 يوم على التجديد')" style="padding: 12px; background: #2980b9; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">📋 تفاصيل الباقة</button>
+                <button onclick="alert('يرجى التواصل مع الأدمن لتجديد الباقة')" style="padding: 12px; background: #27ae60; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">🔄 طلب تجديد الباقة</button>
+                <button onclick="localStorage.removeItem('freenet_user'); location.reload();" style="padding: 12px; background: #c0392b; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">🚪 تسجيل الخروج</button>
+            </div>
+        </div>
+    `;
 }
