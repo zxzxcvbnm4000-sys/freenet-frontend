@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FreeNet STORE</title>
+    <title>FreeNet STORE | متجر فري نت</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0f172a">
+    <!-- Tailwind CSS for Dark Mode styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -13,9 +14,11 @@
             theme: {
                 extend: {
                     colors: {
-                        freenet: {
+                        brand: {
+                            50: '#ecfdf5',
                             500: '#10b981',
                             600: '#059669',
+                            700: '#047857',
                             dark: '#0f172a',
                             card: '#1e293b'
                         }
@@ -26,18 +29,26 @@
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen font-sans flex flex-col justify-between">
+<body class="bg-slate-900 text-slate-100 min-h-screen font-sans flex flex-col justify-between selection:bg-emerald-500 selection:text-white">
 
     <!-- Header / Navbar -->
-    <header class="bg-slate-800 border-b border-slate-700 p-4 sticky top-0 z-50 flex justify-between items-center shadow-lg">
-        <div class="flex items-center gap-2">
-            <i class="fa-solid fa-wifi text-emerald-400 text-2xl"></i>
-            <h1 class="text-xl font-bold tracking-wide text-white">FreeNet <span class="text-emerald-400">STORE</span></h1>
+    <header class="bg-slate-800/90 backdrop-blur-md border-b border-slate-700/80 p-4 sticky top-0 z-40 flex justify-between items-center shadow-xl">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-emerald-500/20 rounded-xl flex items-center justify-center border border-emerald-500/30">
+                <i class="fa-solid fa-store text-emerald-400 text-xl"></i>
+            </div>
+            <div>
+                <h1 class="text-lg font-black tracking-wide text-white leading-tight">FreeNet <span class="text-emerald-400">STORE</span></h1>
+                <p class="text-[10px] text-slate-400 font-medium">متجر فري نت لإدارة باقات الاتصالات</p>
+            </div>
         </div>
         <div id="userInfo" class="hidden flex items-center gap-3">
-            <span id="userName" class="text-sm font-medium text-slate-300"></span>
-            <button onclick="logout()" class="text-red-400 hover:text-red-300 text-sm bg-slate-700 px-3 py-1.5 rounded-lg border border-slate-600">
-                خروج <i class="fa-solid fa-right-from-bracket mr-1"></i>
+            <div class="text-right">
+                <span id="userName" class="block text-xs font-bold text-slate-200"></span>
+                <span id="userRoleBadge" class="text-[9px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-full font-semibold">عميل</span>
+            </div>
+            <button onclick="logout()" title="تسجيل الخروج" class="text-red-400 hover:text-red-300 bg-slate-700/60 hover:bg-slate-700 p-2 rounded-xl border border-slate-600 transition">
+                <i class="fa-solid fa-right-from-bracket text-sm"></i>
             </button>
         </div>
     </header>
@@ -46,78 +57,101 @@
     <main class="container mx-auto p-4 max-w-md flex-1">
 
         <!-- 🔒 شاشة تسجيل الدخول (Login) -->
-        <section id="loginSection" class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-xl my-8">
-            <h2 class="text-2xl font-bold text-center mb-6 text-emerald-400">تسجيل الدخول</h2>
+        <section id="loginSection" class="bg-slate-800/80 backdrop-blur-lg p-6 rounded-3xl border border-slate-700 shadow-2xl my-6">
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-gradient-to-tr from-emerald-600 to-teal-400 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-lg shadow-emerald-500/20">
+                    <i class="fa-solid fa-user-shield text-2xl text-white"></i>
+                </div>
+                <h2 class="text-2xl font-black text-white">تسجيل الدخول</h2>
+                <p class="text-xs text-slate-400 mt-1">مرحباً بك في متجر فري نت</p>
+            </div>
+
             <form onsubmit="handleLogin(event)" class="space-y-4">
                 <div>
-                    <label class="block text-sm font-medium text-slate-300 mb-1">رقم الهاتف</label>
-                    <input type="tel" id="phoneInput" required placeholder="01xxxxxxxxx" 
-                        class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500">
+                    <label class="block text-xs font-semibold text-slate-300 mb-1.5">رقم الموبايل</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-mobile-screen absolute right-3.5 top-3.5 text-slate-500 text-sm"></i>
+                        <input type="tel" id="phoneInput" required placeholder="01xxxxxxxxx" 
+                            class="w-full bg-slate-900/90 border border-slate-700 rounded-2xl pr-10 pl-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition">
+                    </div>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-slate-300 mb-1">كلمة السر</label>
-                    <input type="password" id="passwordInput" required placeholder="••••••••" 
-                        class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500">
+                    <label class="block text-xs font-semibold text-slate-300 mb-1.5">كلمة المرور</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-lock absolute right-3.5 top-3.5 text-slate-500 text-sm"></i>
+                        <input type="password" id="passwordInput" required placeholder="••••••••" 
+                            class="w-full bg-slate-900/90 border border-slate-700 rounded-2xl pr-10 pl-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition">
+                    </div>
                 </div>
-                <button type="submit" 
-                    class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl shadow-lg transition duration-200">
-                    دخول
+
+                <button type="submit" id="loginBtn"
+                    class="w-full bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white font-bold py-3.5 rounded-2xl shadow-lg shadow-emerald-600/30 transition duration-200 text-sm mt-2">
+                    دخول إلى الحساب
                 </button>
             </form>
 
-            <!-- ➕ أزرار إنشاء حساب ونسيت كلمة المرور -->
-            <div class="flex justify-between items-center text-xs text-slate-400 mt-5 pt-4 border-t border-slate-700/60">
-                <button type="button" onclick="openModal('registerModal')" class="hover:text-emerald-400 transition font-medium">
-                    <i class="fa-solid fa-user-plus ml-1"></i> إنشاء حساب جديد
+            <!-- أزرار إنشاء حساب ونسيت كلمة المرور -->
+            <div class="flex items-center justify-between text-xs text-slate-400 mt-6 pt-4 border-t border-slate-700/60">
+                <button type="button" onclick="openModal('registerModal')" class="hover:text-emerald-400 transition font-semibold flex items-center gap-1.5">
+                    <i class="fa-solid fa-user-plus text-emerald-500"></i> إنشاء حساب جديد
                 </button>
-                <button type="button" onclick="openModal('forgotModal')" class="hover:text-amber-400 transition font-medium">
-                    <i class="fa-solid fa-key ml-1"></i> نسيت كلمة المرور؟
+                <button type="button" onclick="openModal('forgotModal')" class="hover:text-amber-400 transition font-semibold flex items-center gap-1.5">
+                    <i class="fa-solid fa-key text-amber-500"></i> نسيت كلمة المرور؟
                 </button>
             </div>
 
-            <p id="loginError" class="text-red-400 text-sm text-center mt-4 hidden"></p>
+            <p id="loginError" class="text-red-400 text-xs text-center mt-4 bg-red-500/10 border border-red-500/20 p-2.5 rounded-xl hidden font-medium"></p>
         </section>
 
         <!-- 📊 لوحة التحكم (Dashboard) -->
-        <section id="dashboardSection" class="hidden space-y-6">
+        <section id="dashboardSection" class="hidden space-y-5">
 
             <!-- Tabs Navigation -->
-            <div class="flex bg-slate-800 p-1 rounded-xl border border-slate-700 gap-1 text-xs font-semibold">
-                <button onclick="switchTab('alertsTab')" id="tab-alertsTab" class="flex-1 py-2.5 rounded-lg bg-emerald-600 text-white shadow">
+            <div class="flex bg-slate-800/90 p-1.5 rounded-2xl border border-slate-700/80 gap-1 text-xs font-bold shadow-md">
+                <button onclick="switchTab('alertsTab')" id="tab-alertsTab" class="flex-1 py-2.5 rounded-xl bg-emerald-600 text-white shadow transition">
                     تنبيهات التجديد
                 </button>
-                <button onclick="switchTab('ownersTab')" id="tab-ownersTab" class="flex-1 py-2.5 rounded-lg text-slate-400 hover:text-white">
+                <button onclick="switchTab('ownersTab')" id="tab-ownersTab" class="flex-1 py-2.5 rounded-xl text-slate-400 hover:text-white transition">
                     أرقام الأونر
                 </button>
-                <button onclick="switchTab('packagesTab')" id="tab-packagesTab" class="flex-1 py-2.5 rounded-lg text-slate-400 hover:text-white">
+                <button onclick="switchTab('packagesTab')" id="tab-packagesTab" class="flex-1 py-2.5 rounded-xl text-slate-400 hover:text-white transition">
                     الباقات المتاحة
                 </button>
             </div>
 
             <!-- Tab 1: تنبيهات التجديد (28 يوم) -->
             <div id="alertsTab" class="tab-content space-y-3">
-                <h3 class="text-lg font-bold text-slate-200 flex items-center justify-between">
-                    <span>تنبيهات انتهاء الاشتراك</span>
-                    <span class="text-xs bg-amber-500/20 text-amber-400 px-2.5 py-1 rounded-full">دورة 28 يوم</span>
-                </h3>
-                <div id="alertsList" class="space-y-3">
-                    <p class="text-slate-400 text-sm text-center py-6">جاري تحميل البيانات...</p>
+                <div class="flex items-center justify-between">
+                    <h3 class="text-sm font-bold text-slate-200 flex items-center gap-2">
+                        <i class="fa-solid fa-bell text-amber-400"></i>
+                        <span>تنبيهات انتهاء الاشتراكات</span>
+                    </h3>
+                    <span class="text-[10px] bg-amber-500/20 text-amber-400 border border-amber-500/30 px-2.5 py-1 rounded-full font-semibold">دورة 28 يوم</span>
+                </div>
+                <div id="alertsList" class="space-y-2.5">
+                    <p class="text-slate-400 text-xs text-center py-6">جاري تحميل البيانات...</p>
                 </div>
             </div>
 
             <!-- Tab 2: دليل أرقام الأونر -->
             <div id="ownersTab" class="tab-content hidden space-y-3">
-                <h3 class="text-lg font-bold text-slate-200">أرقام حسابات الأونر</h3>
-                <div id="ownersList" class="space-y-3">
-                    <p class="text-slate-400 text-sm text-center py-6">جاري تحميل البيانات...</p>
+                <h3 class="text-sm font-bold text-slate-200 flex items-center gap-2">
+                    <i class="fa-solid fa-user-gear text-emerald-400"></i>
+                    <span>دليل أرقام الأدمن والأونر</span>
+                </h3>
+                <div id="ownersList" class="space-y-2.5">
+                    <p class="text-slate-400 text-xs text-center py-6">جاري تحميل البيانات...</p>
                 </div>
             </div>
 
             <!-- Tab 3: الباقات المتاحة -->
             <div id="packagesTab" class="tab-content hidden space-y-3">
-                <h3 class="text-lg font-bold text-slate-200">الباقات النشطة</h3>
-                <div id="packagesList" class="grid grid-cols-1 gap-3">
-                    <p class="text-slate-400 text-sm text-center py-6">جاري تحميل البيانات...</p>
+                <h3 class="text-sm font-bold text-slate-200 flex items-center gap-2">
+                    <i class="fa-solid fa-cubes text-cyan-400"></i>
+                    <span>باقات الإنترنت والعروض</span>
+                </h3>
+                <div id="packagesList" class="grid grid-cols-1 gap-2.5">
+                    <p class="text-slate-400 text-xs text-center py-6">جاري تحميل البيانات...</p>
                 </div>
             </div>
 
@@ -125,65 +159,91 @@
 
     </main>
 
-    <!-- 🪟 نافذة إنشاء حساب جديد (Modal) -->
-    <div id="registerModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
-        <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 w-full max-w-sm relative shadow-2xl">
+    <!-- 🪟 نافذة إنشاء حساب جديد (Register Modal) -->
+    <div id="registerModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-slate-800 p-6 rounded-3xl border border-slate-700 w-full max-w-sm relative shadow-2xl">
             <button onclick="closeModal('registerModal')" class="absolute top-4 left-4 text-slate-400 hover:text-white text-lg">
                 <i class="fa-solid fa-xmark"></i>
             </button>
-            <h3 class="text-xl font-bold text-emerald-400 text-center mb-4">حساب جديد</h3>
+            <div class="text-center mb-4">
+                <div class="w-12 h-12 bg-emerald-500/20 text-emerald-400 rounded-2xl flex items-center justify-center mx-auto mb-2 border border-emerald-500/30">
+                    <i class="fa-solid fa-user-plus text-xl"></i>
+                </div>
+                <h3 class="text-lg font-black text-white">إنشاء حساب جديد</h3>
+                <p class="text-xs text-slate-400">سجل حسابك للانضمام إلى متجر فري نت</p>
+            </div>
             <form onsubmit="handleRegister(event)" class="space-y-3">
                 <div>
-                    <label class="block text-xs font-medium text-slate-300 mb-1">الاسم الكامل</label>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">الاسم بالكامل</label>
                     <input type="text" id="regName" required placeholder="محمد أشرَف" 
-                        class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500">
+                        class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500">
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-slate-300 mb-1">رقم الهاتف</label>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">رقم الموبايل</label>
                     <input type="tel" id="regPhone" required placeholder="01xxxxxxxxx" 
-                        class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500">
+                        class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500">
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-slate-300 mb-1">كلمة السر</label>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">كلمة المرور</label>
                     <input type="password" id="regPassword" required placeholder="••••••••" 
-                        class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500">
+                        class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500">
                 </div>
-                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-xl mt-2 text-sm">
-                    إنشاء الحساب
+                <button type="submit" id="regBtn" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl mt-2 text-xs shadow-lg transition">
+                    تأكيد وإنشاء الحساب
                 </button>
             </form>
-            <p id="regMsg" class="text-xs text-center mt-3 hidden"></p>
+            <p id="regMsg" class="text-xs text-center mt-3 hidden font-semibold p-2 rounded-xl"></p>
         </div>
     </div>
 
-    <!-- 🪟 نافذة نسيت كلمة المرور (Modal) -->
-    <div id="forgotModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
-        <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 w-full max-w-sm relative shadow-2xl text-center">
+    <!-- 🪟 نافذة سكريبت تغيير كلمة مرور فودافون (Forgot Password Modal) -->
+    <div id="forgotModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-slate-800 p-6 rounded-3xl border border-slate-700 w-full max-w-sm relative shadow-2xl">
             <button onclick="closeModal('forgotModal')" class="absolute top-4 left-4 text-slate-400 hover:text-white text-lg">
                 <i class="fa-solid fa-xmark"></i>
             </button>
-            <div class="w-12 h-12 bg-amber-500/20 text-amber-400 rounded-full flex items-center justify-center mx-auto mb-3 text-xl">
-                <i class="fa-solid fa-headset"></i>
+            <div class="text-center mb-4">
+                <div class="w-12 h-12 bg-amber-500/20 text-amber-400 rounded-2xl flex items-center justify-center mx-auto mb-2 border border-amber-500/30">
+                    <i class="fa-solid fa-key text-xl"></i>
+                </div>
+                <h3 class="text-lg font-black text-white">استعادة وتغيير كلمة المرور</h3>
+                <p class="text-xs text-slate-400">تغيير كلمة السر مباشرة عبر سيرفرات فودافون</p>
             </div>
-            <h3 class="text-xl font-bold text-white mb-2">استعادة كلمة المرور</h3>
-            <p class="text-xs text-slate-300 leading-relaxed mb-4">
-                لإعادة تعيين كلمة السر الخاصة بحسابك، يرجى التواصل مباشر مع خدمة الدعم الفني أو الأدمن المسؤول.
-            </p>
-            <a href="https://wa.me/201000000000" target="_blank" class="block w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-xl text-sm">
-                <i class="fa-brands fa-whatsapp ml-1"></i> تواصل مع الأدمن
-            </a>
+            
+            <form onsubmit="handleVodafoneChange(event)" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">رقم حساب فودافون</label>
+                    <input type="tel" id="vfNumber" required placeholder="010xxxxxxxxx" 
+                        class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">كلمة المرور الحالية</label>
+                    <input type="password" id="vfOldPass" required placeholder="••••••••" 
+                        class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">كلمة المرور الجديدة</label>
+                    <input type="password" id="vfNewPass" required placeholder="••••••••" 
+                        class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500">
+                </div>
+                <button type="submit" id="vfSubmitBtn" class="w-full bg-amber-600 hover:bg-amber-500 text-white font-bold py-3 rounded-xl mt-2 text-xs shadow-lg transition">
+                    تشغيل أداة التغيير أونلاين 🚀
+                </button>
+            </form>
+            <p id="vfMsg" class="text-xs text-center mt-3 hidden font-semibold p-2.5 rounded-xl"></p>
         </div>
     </div>
 
     <!-- Footer -->
-    <footer class="bg-slate-800 border-t border-slate-700 py-3 text-center text-xs text-slate-400">
+    <footer class="bg-slate-800/90 border-t border-slate-700/80 py-3 text-center text-xs text-slate-400">
         FreeNet STORE &copy; 2026 - جميع الحقوق محفوظة
     </footer>
 
-    <!-- Logic & API Calls -->
+    <!-- JavaScript & Logic -->
     <script>
         const API_URL = 'https://freenet-backend1.vercel.app';
 
+        // تسجيل الـ Service Worker لتشغيل PWA
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js').catch(err => console.log('SW Fail:', err));
         }
@@ -199,11 +259,17 @@
         function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
         function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
 
+        // 1. تسجيل الدخول
         async function handleLogin(e) {
             e.preventDefault();
-            const phone = document.getElementById('phoneInput').value;
-            const password = document.getElementById('passwordInput').value;
+            const phone = document.getElementById('phoneInput').value.trim();
+            const password = document.getElementById('passwordInput').value.trim();
             const errEl = document.getElementById('loginError');
+            const btn = document.getElementById('loginBtn');
+
+            btn.disabled = true;
+            btn.innerText = 'جاري التحقق...';
+            errEl.classList.add('hidden');
 
             try {
                 const res = await fetch(`${API_URL}/api/login`, {
@@ -216,24 +282,32 @@
                 if (data.success) {
                     currentUser = data.user;
                     localStorage.setItem('freenet_user', JSON.stringify(currentUser));
-                    errEl.classList.add('hidden');
                     showDashboard();
                 } else {
-                    errEl.innerText = data.message || 'خطأ في تسجيل الدخول';
+                    errEl.innerText = data.message || 'خطأ في رقم الهاتف أو كلمة المرور';
                     errEl.classList.remove('hidden');
                 }
             } catch (err) {
                 errEl.innerText = 'تعذر الاتصال بالسيرفر، تحقق من الإنترنت';
                 errEl.classList.remove('hidden');
+            } finally {
+                btn.disabled = false;
+                btn.innerText = 'دخول إلى الحساب';
             }
         }
 
+        // 2. إنشاء حساب جديد
         async function handleRegister(e) {
             e.preventDefault();
-            const name = document.getElementById('regName').value;
-            const phone = document.getElementById('regPhone').value;
-            const password = document.getElementById('regPassword').value;
+            const name = document.getElementById('regName').value.trim();
+            const phone = document.getElementById('regPhone').value.trim();
+            const password = document.getElementById('regPassword').value.trim();
             const msgEl = document.getElementById('regMsg');
+            const btn = document.getElementById('regBtn');
+
+            btn.disabled = true;
+            btn.innerText = 'جاري التسجيل...';
+            msgEl.classList.add('hidden');
 
             try {
                 const res = await fetch(`${API_URL}/api/register`, {
@@ -243,114 +317,49 @@
                 });
                 const data = await res.json();
                 
-                if (res.ok && data.success) {
-                    msgEl.className = 'text-xs text-center mt-3 text-emerald-400 font-semibold';
-                    msgEl.innerText = 'تم إنشاء الحساب بنجاح! يمكنك الآن الدخول.';
+                if (data.success) {
+                    msgEl.className = 'text-xs text-center mt-3 text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 font-semibold p-2.5 rounded-xl';
+                    msgEl.innerText = 'تم إنشاء الحساب بنجاح! يمكنك الآن تسجيل الدخول.';
                     msgEl.classList.remove('hidden');
-                    setTimeout(() => closeModal('registerModal'), 2000);
+                    setTimeout(() => {
+                        closeModal('registerModal');
+                        document.getElementById('phoneInput').value = phone;
+                    }, 2000);
                 } else {
-                    msgEl.className = 'text-xs text-center mt-3 text-red-400 font-semibold';
+                    msgEl.className = 'text-xs text-center mt-3 text-red-400 bg-red-500/10 border border-red-500/20 font-semibold p-2.5 rounded-xl';
                     msgEl.innerText = data.message || 'تعذر إنشاء الحساب';
                     msgEl.classList.remove('hidden');
                 }
             } catch (err) {
-                msgEl.className = 'text-xs text-center mt-3 text-red-400 font-semibold';
-                msgEl.innerText = 'تم طلب التسجيل، تواصل مع الأدمن لتفعيل الحساب.';
+                msgEl.className = 'text-xs text-center mt-3 text-red-400 bg-red-500/10 border border-red-500/20 font-semibold p-2.5 rounded-xl';
+                msgEl.innerText = 'خطأ في السيرفر، يرجى المحاولة لاحقاً';
                 msgEl.classList.remove('hidden');
+            } finally {
+                btn.disabled = false;
+                btn.innerText = 'تأكيد وإنشاء الحساب';
             }
         }
 
-        function showDashboard() {
-            document.getElementById('loginSection').classList.add('hidden');
-            document.getElementById('dashboardSection').classList.remove('hidden');
-            document.getElementById('userInfo').classList.remove('hidden');
-            document.getElementById('userName').innerText = currentUser.name || currentUser.phone;
+        // 3. سكريبت تغيير كلمة السر فودافون
+        async function handleVodafoneChange(e) {
+            e.preventDefault();
+            const number = document.getElementById('vfNumber').value.trim();
+            const password = document.getElementById('vfOldPass').value.trim();
+            const newPass = document.getElementById('vfNewPass').value.trim();
+            const msgEl = document.getElementById('vfMsg');
+            const btn = document.getElementById('vfSubmitBtn');
 
-            loadAlerts();
-            loadOwners();
-            loadPackages();
-        }
+            btn.disabled = true;
+            btn.innerText = 'جاري الاتصال بفودافون... ⏳';
+            msgEl.classList.add('hidden');
 
-        function logout() {
-            localStorage.removeItem('freenet_user');
-            currentUser = null;
-            location.reload();
-        }
-
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-            document.getElementById(tabId).classList.remove('hidden');
-
-            document.querySelectorAll('[id^="tab-"]').forEach(btn => {
-                btn.className = 'flex-1 py-2.5 rounded-lg text-slate-400 hover:text-white';
-            });
-            document.getElementById(`tab-${tabId}`).className = 'flex-1 py-2.5 rounded-lg bg-emerald-600 text-white shadow';
-        }
-
-        async function loadAlerts() {
-            const list = document.getElementById('alertsList');
             try {
-                const res = await fetch(`${API_URL}/api/admin/renewal-alerts`);
-                const alerts = await res.json();
-                if (!alerts.length) {
-                    list.innerHTML = `<div class="bg-slate-800 p-4 rounded-xl border border-slate-700 text-center text-slate-400 text-sm">لا توجد اشتراكات قريبة من الانتهاء حالياً 👍</div>`;
-                    return;
-                }
-                list.innerHTML = alerts.map(item => `
-                    <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 flex justify-between items-center">
-                        <div>
-                            <p class="font-bold text-white">${item.users?.name || 'عميل'}</p>
-                            <p class="text-xs text-slate-400">${item.users?.phone || ''}</p>
-                        </div>
-                        <div class="text-left">
-                            <span class="text-xs bg-red-500/20 text-red-400 px-2 py-1 rounded-md font-semibold">ينتهي: ${item.next_renewal_date}</span>
-                        </div>
-                    </div>
-                `).join('');
-            } catch (err) {
-                list.innerHTML = `<p class="text-red-400 text-xs text-center">خطأ في التحميل</p>`;
-            }
-        }
+                const res = await fetch(`${API_URL}/api/change-vodafone-password`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ number, password, newPass })
+                });
+                const data = await res.json();
 
-        async function loadOwners() {
-            const list = document.getElementById('ownersList');
-            try {
-                const res = await fetch(`${API_URL}/api/admin/owners`);
-                const owners = await res.json();
-                list.innerHTML = owners.map(owner => `
-                    <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 flex justify-between items-center">
-                        <div>
-                            <p class="font-bold text-emerald-400">${owner.name || 'أونر'}</p>
-                            <p class="text-sm text-slate-300">${owner.phone}</p>
-                        </div>
-                        <a href="tel:${owner.phone}" class="bg-emerald-600/20 text-emerald-400 hover:bg-emerald-600 hover:text-white p-2.5 rounded-xl border border-emerald-500/30">
-                            <i class="fa-solid fa-phone"></i>
-                        </a>
-                    </div>
-                `).join('');
-            } catch (err) {
-                list.innerHTML = `<p class="text-red-400 text-xs text-center">خطأ في التحميل</p>`;
-            }
-        }
-
-        async function loadPackages() {
-            const list = document.getElementById('packagesList');
-            try {
-                const res = await fetch(`${API_URL}/api/packages`);
-                const pkgs = await res.json();
-                list.innerHTML = pkgs.map(pkg => `
-                    <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 flex justify-between items-center">
-                        <div>
-                            <span class="text-xs bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-md">${pkg.provider || 'شبكة'}</span>
-                            <h4 class="font-bold text-white mt-1">${pkg.name}</h4>
-                        </div>
-                        <span class="text-lg font-black text-emerald-400">${pkg.price} ج.م</span>
-                    </div>
-                `).join('');
-            } catch (err) {
-                list.innerHTML = `<p class="text-red-400 text-xs text-center">خطأ في التحميل</p>`;
-            }
-        }
-    </script>
-</body>
-</html>
+                if (data.success) {
+ 
