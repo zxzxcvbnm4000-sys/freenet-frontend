@@ -1,6 +1,6 @@
 {
-  "name": "FreeNet STORE",
-  "short_name": "FreeNet",
+  "name": "FreeNet STORE - متجر فري نت",
+  "short_name": "FreeNet STORE",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#0f172a",
