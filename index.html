@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FreeNet STORE</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0f172a">
+    <!-- Tailwind CSS for Dark Mode styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        freenet: {
+                            500: '#10b981',
+                            600: '#059669',
+                            dark: '#0f172a',
+                            card: '#1e293b'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen font-sans flex flex-col justify-between">
+
+    <!-- Header / Navbar -->
+    <header class="bg-slate-800 border-b border-slate-700 p-4 sticky top-0 z-50 flex justify-between items-center shadow-lg">
+        <div class="flex items-center gap-2">
+            <i class="fa-solid fa-wifi text-emerald-400 text-2xl"></i>
+            <h1 class="text-xl font-bold tracking-wide text-white">FreeNet <span class="text-emerald-400">STORE</span></h1>
+        </div>
+        <div id="userInfo" class="hidden flex items-center gap-3">
+            <span id="userName" class="text-sm font-medium text-slate-300"></span>
+            <button onclick="logout()" class="text-red-400 hover:text-red-300 text-sm bg-slate-700 px-3 py-1.5 rounded-lg border border-slate-600">
+                خروج <i class="fa-solid fa-right-from-bracket mr-1"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="container mx-auto p-4 max-w-md flex-1">
+
+        <!-- 🔒 شاشة تسجيل الدخول (Login) -->
+        <section id="loginSection" class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-xl my-8">
+            <h2 class="text-2xl font-bold text-center mb-6 text-emerald-400">تسجيل الدخول</h2>
+            <form onsubmit="handleLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-300 mb-1">رقم الهاتف</label>
+                    <input type="tel" id="phoneInput" required placeholder="01xxxxxxxxx" 
+                        class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-300 mb-1">كلمة السر</label>
+                    <input type="password" id="passwordInput" required placeholder="••••••••" 
+                        class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500">
+                </div>
+                <button type="submit" 
+                    class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl shadow-lg transition duration-200">
+                    دخول
+                </button>
+            </form>
+            <p id="loginError" class="text-red-400 text-sm text-center mt-4 hidden"></p>
+        </section>
+
+        <!-- 📊 لوحة التحكم (Dashboard) -->
+        <section id="dashboardSection" class="hidden space-y-6">
+
+            <!-- Tabs Navigation -->
+            <div class="flex bg-slate-800 p-1 rounded-xl border border-slate-700 gap-1 text-xs font-semibold">
+                <button onclick="switchTab('alertsTab')" id="tab-alertsTab" class="flex-1 py-2.5 rounded-lg bg-emerald-600 text-white shadow">
+                    تنبيهات التجديد
+                </button>
+                <button onclick="switchTab('ownersTab')" id="tab-ownersTab" class="flex-1 py-2.5 rounded-lg text-slate-400 hover:text-white">
+                    أرقام الأونر
+                </button>
+                <button onclick="switchTab('packagesTab')" id="tab-packagesTab" class="flex-1 py-2.5 rounded-lg text-slate-400 hover:text-white">
+                    الباقات المتاحة
+                </button>
+            </div>
+
+            <!-- Tab 1: تنبيهات التجديد (28 يوم) -->
+            <div id="alertsTab" class="tab-content space-y-3">
+                <h3 class="text-lg font-bold text-slate-200 flex items-center justify-between">
+                    <span>تنبيهات انتهاء الاشتراك</span>
+                    <span class="text-xs bg-amber-500/20 text-amber-400 px-2.5 py-1 rounded-full">دورة 28 يوم</span>
+                </h3>
+                <div id="alertsList" class="space-y-3">
+                    <p class="text-slate-400 text-sm text-center py-6">جاري تحميل البيانات...</p>
+                </div>
+            </div>
+
+            <!-- Tab 2: دليل أرقام الأونر -->
+            <div id="ownersTab" class="tab-content hidden space-y-3">
+                <h3 class="text-lg font-bold text-slate-200">أرقام حسابات الأونر</h3>
+                <div id="ownersList" class="space-y-3">
+                    <p class="text-slate-400 text-sm text-center py-6">جاري تحميل البيانات...</p>
+                </div>
+            </div>
+
+            <!-- Tab 3: الباقات المتاحة -->
+            <div id="packagesTab" class="tab-content hidden space-y-3">
+                <h3 class="text-lg font-bold text-slate-200">الباقات النشطة</h3>
+                <div id="packagesList" class="grid grid-cols-1 gap-3">
+                    <p class="text-slate-400 text-sm text-center py-6">جاري تحميل البيانات...</p>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-800 border-t border-slate-700 py-3 text-center text-xs text-slate-400">
+        FreeNet STORE &copy; 2026 - جميع الحقوق محفوظة
+    </footer>
+
+    <!-- Logic & API Calls -->
+    <script>
+        const API_URL = 'https://freenet-backend1.vercel.app';
+
+        // PWA Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(err => console.log('SW Fail:', err));
+        }
+
+        let currentUser = JSON.parse(localStorage.getItem('freenet_user')) || null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (currentUser) {
+                showDashboard();
+            }
+        });
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const phone = document.getElementById('phoneInput').value;
+            const password = document.getElementById('passwordInput').value;
+            const errEl = document.getElementById('loginError');
+
+            try {
+                const res = await fetch(`${API_URL}/api/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ phone, password })
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    currentUser = data.user;
+                    localStorage.setItem('freenet_user', JSON.stringify(currentUser));
+                    errEl.classList.add('hidden');
+                    showDashboard();
+                } else {
+                    errEl.innerText = data.message || 'خطأ في تسجيل الدخول';
+                    errEl.classList.remove('hidden');
+                }
+            } catch (err) {
+                errEl.innerText = 'تعذر الاتصال بالسيرفر، تحقق من الإنترنت';
+                errEl.classList.remove('hidden');
+            }
+        }
+
+        function showDashboard() {
+            document.getElementById('loginSection').classList.add('hidden');
+            document.getElementById('dashboardSection').classList.remove('hidden');
+            document.getElementById('userInfo').classList.remove('hidden');
+            document.getElementById('userName').innerText = currentUser.name || currentUser.phone;
+
+            loadAlerts();
+            loadOwners();
+            loadPackages();
+        }
+
+        function logout() {
+            localStorage.removeItem('freenet_user');
+            currentUser = null;
+            location.reload();
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(tabId).classList.remove('hidden');
+
+            document.querySelectorAll('[id^="tab-"]').forEach(btn => {
+                btn.className = 'flex-1 py-2.5 rounded-lg text-slate-400 hover:text-white';
+            });
+            document.getElementById(`tab-${tabId}`).className = 'flex-1 py-2.5 rounded-lg bg-emerald-600 text-white shadow';
+        }
+
+        async function loadAlerts() {
+            const list = document.getElementById('alertsList');
+            try {
+                const res = await fetch(`${API_URL}/api/admin/renewal-alerts`);
+                const alerts = await res.json();
+                if (!alerts.length) {
+                    list.innerHTML = `<div class="bg-slate-800 p-4 rounded-xl border border-slate-700 text-center text-slate-400 text-sm">لا توجد اشتراكات قريبة من الانتهاء حالياً 👍</div>`;
+                    return;
+                }
+                list.innerHTML = alerts.map(item => `
+                    <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 flex justify-between items-center">
+                        <div>
+                            <p class="font-bold text-white">${item.users?.name || 'عميل'}</p>
+                            <p class="text-xs text-slate-400">${item.users?.phone || ''}</p>
+                        </div>
+                        <div class="text-left">
+                            <span class="text-xs bg-red-500/20 text-red-400 px-2 py-1 rounded-md font-semibold">ينتهي: ${item.next_renewal_date}</span>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (err) {
+                list.innerHTML = `<p class="text-red-400 text-xs text-center">خطأ في التحميل</p>`;
+            }
+        }
+
+        async function loadOwners() {
+            const list = document.getElementById('ownersList');
+            try {
+                const res = await fetch(`${API_URL}/api/admin/owners`);
+                const owners = await res.json();
+                list.innerHTML = owners.map(owner => `
+                    <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 flex justify-between items-center">
+                        <div>
+                            <p class="font-bold text-emerald-400">${owner.name || 'أونر'}</p>
+                            <p class="text-sm text-slate-300">${owner.phone}</p>
+                        </div>
+                        <a href="tel:${owner.phone}" class="bg-emerald-600/20 text-emerald-400 hover:bg-emerald-600 hover:text-white p-2.5 rounded-xl border border-emerald-500/30">
+                            <i class="fa-solid fa-phone"></i>
+                        </a>
+                    </div>
+                `).join('');
+            } catch (err) {
+                list.innerHTML = `<p class="text-red-400 text-xs text-center">خطأ في التحميل</p>`;
+            }
+        }
+
+        async function loadPackages() {
+            const list = document.getElementById('packagesList');
+            try {
+                const res = await fetch(`${API_URL}/api/packages`);
+                const pkgs = await res.json();
+                list.innerHTML = pkgs.map(pkg => `
+                    <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 flex justify-between items-center">
+                        <div>
+                            <span class="text-xs bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-md">${pkg.provider || 'شبكة'}</span>
+                            <h4 class="font-bold text-white mt-1">${pkg.name}</h4>
+                        </div>
+                        <span class="text-lg font-black text-emerald-400">${pkg.price} ج.م</span>
+                    </div>
+                `).join('');
+            } catch (err) {
+                list.innerHTML = `<p class="text-red-400 text-xs text-center">خطأ في التحميل</p>`;
+            }
+        }
+    </script>
+</body>
+</html>
+
